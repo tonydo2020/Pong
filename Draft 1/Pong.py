@@ -15,12 +15,12 @@ RANDOM = (123, 45, 95)
 MOVESPEED = 5
 
 
-class ball():
-    ball_obj = pygame.Rect(WINDOWWIDTH /2, WINDOWHEIGHT /2, 40, 20)
+class Ball:
+    ball_obj = pygame.Rect(WINDOWWIDTH / 2, WINDOWHEIGHT / 2, 40, 20)
     velocity = 0
     angle = 0
     ball_Image = pygame.image.load('ball.png')
-    ball_Fixed = pygame.transform.scale(ball_Image, (40,20))
+    ball_Fixed = pygame.transform.scale(ball_Image, (40, 20))
 
 
 class score():
@@ -28,8 +28,8 @@ class score():
     AI_Score = 0
 
 
-ball.velocity = random.randint(-1, 1)
-ball.angle = random.randint(-5,5)
+Ball.velocity = random.randint(-1, 1)
+Ball.angle = random.randint(-5,5)
 
 
 def exit_game():
@@ -54,16 +54,26 @@ def collision(player_rect, ball):
         return True
     return False
 
-def AI_command(play_rect, ball):
+
+def ai_command(play_rect, ball):
     if play_rect.right - ball.ball_obj.x < 50:
         return True
     return False
+
 
 def draw_text(text, font, surface, x, y):
     textobj = font.render(text, 1, (0, 0, 0))
     textrect = textobj.get_rect()
     textrect.topleft = x, y
     surface.blit(textobj, textrect)
+
+
+def reset_ball():
+    Ball.ball_obj.x = WINDOWWIDTH / 2
+    Ball.ball_obj.y = WINDOWHEIGHT / 2
+    Ball.velocity = random.randint(-1, 1)
+    Ball.angle = random.randint(-5, 5)
+
 
 
 def play():
@@ -78,36 +88,36 @@ def play():
     font = pygame.font.Font(None, 48)
 
     # #Setup commands
-    moveLeft = False
-    moveRight = False
-    moveUp = False
-    moveDown = False
+    moveleft = False
+    moveright = False
+    moveup = False
+    movedown = False
+
     #Setup the block data structure
 
-    paddleImage = pygame.image.load('spongebob.gif')
+    paddle_image = pygame.image.load('spongebob.gif')
 
     player_middle_paddle = pygame.Rect(WINDOWWIDTH-100, WINDOWHEIGHT / 2, 100, 100)
-    player_middle_paddle_stretched = pygame.transform.scale(paddleImage, (100, 100))
+    player_middle_paddle_stretched = pygame.transform.scale(paddle_image, (100, 100))
 
     player_top_paddle = pygame.Rect(WINDOWWIDTH-100, 0, 100, 100)
-    player_top_paddle_stretched = pygame.transform.scale(paddleImage, (100, 100))
+    player_top_paddle_stretched = pygame.transform.scale(paddle_image, (100, 100))
 
     player_bottom_paddle = pygame.Rect(WINDOWWIDTH - 100, WINDOWHEIGHT - 100, 100, 100)
-    player_bottom_paddle_stretched = pygame.transform.scale(paddleImage, (100, 100))
+    player_bottom_paddle_stretched = pygame.transform.scale(paddle_image, (100, 100))
 
-    AI_middle_paddle = pygame.Rect(0, WINDOWHEIGHT /2, 200, 100)
-    AI_middle_paddle_stretched = pygame.transform.scale(paddleImage, (100, 100))
+    ai_middle_paddle = pygame.Rect(0, WINDOWHEIGHT /2, 200, 100)
+    ai_middle_paddle_stretched = pygame.transform.scale(paddle_image, (100, 100))
 
-    AI_top_paddle = pygame.Rect(0, 0, 100, 100)
-    AI_top_paddle_stretched = pygame.transform.scale(paddleImage, (100, 100))
+    ai_top_paddle = pygame.Rect(0, 0, 100, 100)
+    ai_top_paddle_stretched = pygame.transform.scale(paddle_image, (100, 100))
 
-    AI_bottom_paddle = pygame.Rect(0, WINDOWHEIGHT - 100, 100, 100)
-    AI_bottom_paddle_stretched = pygame.transform.scale(paddleImage, (100, 100))
+    ai_bottom_paddle = pygame.Rect(0, WINDOWHEIGHT - 100, 100, 100)
+    ai_bottom_paddle_stretched = pygame.transform.scale(paddle_image, (100, 100))
 
-    netImage = pygame.image.load('net.png')
+    netimage = pygame.image.load('net.png')
     net = pygame.Rect(WINDOWWIDTH /2 - 100, WINDOWHEIGHT /2, 150, 150)
-    net_stretched = pygame.transform.scale(netImage, (150,150))
-
+    net_stretched = pygame.transform.scale(netimage, (150,150))
 
     windowSurface.fill(WHITE)
     draw_text('Pong', font, windowSurface, WINDOWWIDTH / 3, WINDOWHEIGHT / 3)
@@ -129,68 +139,91 @@ def play():
                 if event.type == KEYDOWN:
                     # change the keyboard variables
                     if event.key == K_LEFT:
-                        moveRight = False
-                        moveLeft = True
+                        moveright = False
+                        moveleft = True
                     if event.key == K_RIGHT:
-                        moveLeft = False
-                        moveRight = True
+                        moveleft = False
+                        moveright = True
                     if event.key == K_UP:
-                        moveDown = False
-                        moveUp = True
+                        movedown = False
+                        moveup = True
                     if event.key == K_DOWN:
-                        moveUp = False
-                        moveDown = True
+                        moveup = False
+                        movedown = True
                 if event.type == KEYUP:
                     if event.key == K_ESCAPE:
                         pygame.quit()
                         sys.exit()
                     if event.key == K_LEFT:
-                        moveLeft = False
+                        moveleft = False
                     if event.key == K_RIGHT:
-                        moveRight = False
+                        moveright = False
                     if event.key == K_UP:
-                        moveUp = False
+                        moveup = False
                     if event.key == K_DOWN:
-                        moveDown = False
+                        movedown = False
 
             windowSurface.fill(WHITE)
-            ball.ball_obj.x += ball.velocity
-            ball.ball_obj.y += ball.angle
+            Ball.ball_obj.x += Ball.velocity
+            Ball.ball_obj.y += Ball.angle
 
-
-
-            if moveDown and player_middle_paddle.bottom < WINDOWHEIGHT:
+            if movedown and player_middle_paddle.bottom < WINDOWHEIGHT:
                 player_middle_paddle.top += MOVESPEED
-            if moveUp and player_middle_paddle.top > 0:
+            if moveup and player_middle_paddle.top > 0:
                 player_middle_paddle.top -= MOVESPEED
-            if moveLeft and player_top_paddle.left > WINDOWWIDTH / 2:
+            if moveleft and player_top_paddle.left > WINDOWWIDTH / 2:
                 player_top_paddle.left -= MOVESPEED
                 player_bottom_paddle.left -= MOVESPEED
-            if moveRight and player_top_paddle.right < WINDOWWIDTH :
+            if moveright and player_top_paddle.right < WINDOWWIDTH :
                 player_top_paddle.right += MOVESPEED
                 player_bottom_paddle.right += MOVESPEED
 
-            if collision(player_bottom_paddle,ball) or collision(player_top_paddle,ball) or collision(player_middle_paddle,ball):
-                ball.velocity = -ball.velocity
-                ball.angle = random.randint(-1,1)
-            if collision(AI_bottom_paddle, ball) or collision(AI_top_paddle, ball) or collision(AI_middle_paddle, ball):
-                ball.velocity = -ball.velocity
-                ball.angle = random.randinta(-1,1)
-
-
-
+            if collision(player_bottom_paddle,Ball) or collision(player_top_paddle,Ball) or collision(player_middle_paddle,Ball):
+                Ball.velocity = -Ball.velocity
+                Ball.angle = random.randint(-1,1)
+            if collision(ai_bottom_paddle, Ball) or collision(ai_top_paddle, Ball) or collision(ai_middle_paddle, Ball):
+                Ball.velocity = -Ball.velocity
+                Ball.angle = random.randint(-1,1)
 
             windowSurface.blit(player_middle_paddle_stretched, player_middle_paddle)
             windowSurface.blit(player_bottom_paddle_stretched, player_bottom_paddle)
             windowSurface.blit(player_top_paddle_stretched, player_top_paddle)
 
-            windowSurface.blit(AI_middle_paddle_stretched, AI_middle_paddle)
-            windowSurface.blit(AI_bottom_paddle_stretched, AI_bottom_paddle)
+            windowSurface.blit(ai_middle_paddle_stretched, ai_middle_paddle)
+            windowSurface.blit(ai_bottom_paddle_stretched, ai_bottom_paddle)
 
-            windowSurface.blit(net_stretched,net)
-            windowSurface.blit(AI_top_paddle_stretched, AI_top_paddle)
-            windowSurface.blit(ball.ball_Fixed, ball.ball_obj)
+            windowSurface.blit(net_stretched, net)
+            windowSurface.blit(ai_top_paddle_stretched, ai_top_paddle)
+            windowSurface.blit(Ball.ball_Fixed, Ball.ball_obj)
+            draw_text(str(score.AI_Score), font, windowSurface, 100, WINDOWHEIGHT / 2)
+            draw_text(str(score.player_Score), font, windowSurface, WINDOWWIDTH - 100, WINDOWHEIGHT / 2)
+
+            if Ball.ball_obj.x > WINDOWWIDTH:
+                score.AI_Score += 1
+                draw_text(str(score.AI_Score), font, windowSurface, 100, WINDOWHEIGHT / 2)
+                reset_ball()
+            elif Ball.ball_obj.x < 0:
+                score.player_Score += 1
+                draw_text(str(score.AI_Score), font, windowSurface, WINDOWWIDTH - 100, WINDOWHEIGHT / 2)
+                reset_ball()
+            elif Ball.ball_obj.y > WINDOWHEIGHT and Ball.ball_obj.x > WINDOWWIDTH / 2:
+                score.AI_Score += 1
+                draw_text(str(score.AI_Score), font, windowSurface, 100, WINDOWHEIGHT / 2)
+                reset_ball()
+            elif Ball.ball_obj.y > WINDOWHEIGHT and Ball.ball_obj.x < WINDOWWIDTH / 2:
+                score.player_Score += 1
+                draw_text(str(score.player_Score), font, windowSurface, WINDOWWIDTH - 100, WINDOWHEIGHT / 2)
+                reset_ball()
+            elif Ball.ball_obj.y < 0 and Ball.ball_obj.x > WINDOWWIDTH / 2:
+                score.AI_Score += 1
+                draw_text(str(score.AI_Score), font, windowSurface, 100, WINDOWHEIGHT / 2)
+                reset_ball()
+            elif Ball.ball_obj.y < 0 and Ball.ball_obj.x < WINDOWWIDTH / 2:
+                score.player_Score += 1
+                draw_text(str(score.player_Score), font, windowSurface, WINDOWWIDTH - 100, WINDOWHEIGHT / 2)
+                reset_ball()
             pygame.display.update()
             mainClock.tick(60)
+
 
 play()
