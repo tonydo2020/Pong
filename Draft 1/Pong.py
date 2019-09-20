@@ -226,16 +226,22 @@ def play():
                 draw_text(str(score.player_Score), font, windowSurface, WINDOWWIDTH - 100, WINDOWHEIGHT / 2)
                 reset_ball()
 
+            elif Ball.ball_obj.y < 0 and Ball.ball_obj.x == WINDOWWIDTH /2:
+                reset_ball()
+            elif Ball.ball_obj.y > WINDOWHEIGHT and Ball.ball_obj.x == WINDOWWIDTH / 2:
+                reset_ball()
             if score.AI_Score > 11 or score.player_Score > 11:
                 if score.AI_Score - score.player_Score == 2:
-                    draw_text(str("AI WINS"), font, windowSurface, WINDOWWIDTH - 100, WINDOWHEIGHT / 2)
+                    draw_text(str("AI WINS"), font, windowSurface, WINDOWWIDTH/2 - 100, WINDOWHEIGHT / 2)
                     game_over_sound.play()
                 else:
-                    draw_text(str("Player WINS"), font, windowSurface, WINDOWWIDTH - 100, WINDOWHEIGHT / 2)
+                    draw_text(str("Player WINS"), font, windowSurface, WINDOWWIDTH/2 - 100, WINDOWHEIGHT / 2)
                     game_over_sound.play()
-                draw_text(str("Press P to play again?"), font, windowSurface, WINDOWWIDTH - 100, WINDOWHEIGHT / 2 - 200)
-                draw_text(str("Press Escape to escape"), font, windowSurface, WINDOWWIDTH - 100, WINDOWHEIGHT / 2 - 300)
+                draw_text(str("Press P to play again?"), font, windowSurface, WINDOWWIDTH/2 - 200, WINDOWHEIGHT / 2 - 200)
+                draw_text(str("Press Escape to escape"), font, windowSurface, WINDOWWIDTH/2 - 200, WINDOWHEIGHT / 2 - 300)
+                pygame.display.update()
                 get_input()
+                pygame.display.update()
 
             pygame.display.update()
             mainclock.tick(60)
