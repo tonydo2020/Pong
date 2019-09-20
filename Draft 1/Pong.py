@@ -1,6 +1,36 @@
 import pygame, sys, time, random
 from pygame.locals import *
 
+# setup window
+WINDOWWIDTH = 960
+WINDOWHEIGHT = 540
+windowSurface = pygame.display.set_mode((WINDOWWIDTH, WINDOWHEIGHT), 0, 32)
+
+# Setup colors
+BLACK = (0, 0, 0)
+WHITE = (255, 255, 255)
+RANDOM = (123, 45, 95)
+
+
+MOVESPEED = 2
+
+
+class ball():
+    ball_obj = pygame.Rect(WINDOWWIDTH /2, WINDOWHEIGHT /2, 100, 100)
+    velocity = 0
+    angle = 0
+    ball_Image = pygame.image.load('ball.png')
+    ball_Fixed = pygame.transform.scale(ball_Image, (100,100))
+
+
+class score():
+    player_Score = 0
+    AI_Score = 0
+
+
+ball.velocity = random.randint(-2, 2)
+ball.angle = random.randint(-2,2)
+
 
 def exit_game():
     pygame.quit()
@@ -37,29 +67,17 @@ def play():
     pygame.init()
     mainClock = pygame.time.Clock()
 
-
-    # setup window
-    WINDOWWIDTH = 960
-    WINDOWHEIGHT = 540
-    windowSurface = pygame.display.set_mode((WINDOWWIDTH, WINDOWHEIGHT), 0, 32)
     pygame.display.set_caption('Pong')
-    font = pygame.font.Font(None, 48)
 
     game_over_sound = pygame.mixer.Sound('game_over.wav')
     pygame.mixer.music.load('background.wav')
-
-    #Setup colors
-    BLACK = (0, 0, 0)
-    WHITE = (255, 255, 255)
-    RANDOM = (123, 45, 95)
+    font = pygame.font.Font(None, 48)
 
     # #Setup commands
     moveLeft = False
     moveRight = False
     moveUp = False
     moveDown = False
-
-    MOVESPEED = 2
     #Setup the block data structure
 
     paddleImage = pygame.image.load('spongebob.gif')
@@ -86,10 +104,6 @@ def play():
     net = pygame.Rect(WINDOWWIDTH /2 - 100, WINDOWHEIGHT /2, 150, 150)
     net_stretched = pygame.transform.scale(netImage, (150,150))
 
-    ballImage = pygame.image.load('ball.png')
-    ball = pygame.Rect(WINDOWWIDTH /2 - 20, WINDOWHEIGHT /2 , 20, 20)
-    ball_stretched = pygame.transform.scale(ballImage, (20, 20))
-
 
     windowSurface.fill(WHITE)
     draw_text('Pong', font, windowSurface, WINDOWWIDTH / 3, WINDOWHEIGHT / 3)
@@ -100,7 +114,7 @@ def play():
     top_score = 0
     play_game_again = True
     while play_game_again:
-        pygame.mixer.music.play(-1,0.0)
+        # pygame.mixer.music.play(-1,0.0)
 
         play_game = True
         while play_game:
@@ -136,16 +150,10 @@ def play():
                         moveDown = False
 
             windowSurface.fill(WHITE)
-            windowSurface.blit(player_middle_paddle_stretched, player_middle_paddle)
-            windowSurface.blit(player_bottom_paddle_stretched, player_bottom_paddle)
-            windowSurface.blit(player_top_paddle_stretched, player_top_paddle)
+            ball.ball_obj.x += ball.velocity
+            ball.ball_obj.y += ball.angle
 
-            windowSurface.blit(AI_middle_paddle_stretched, AI_middle_paddle)
-            windowSurface.blit(AI_bottom_paddle_stretched, AI_bottom_paddle)
-            windowSurface.blit(AI_top_paddle_stretched, AI_top_paddle)
 
-            windowSurface.blit(net_stretched, net)
-            windowSurface.blit(ball_stretched, ball)
 
             if moveDown and player_middle_paddle.bottom < WINDOWHEIGHT:
                 player_middle_paddle.top += MOVESPEED
@@ -158,6 +166,14 @@ def play():
                 player_top_paddle.right += MOVESPEED
                 player_bottom_paddle.right += MOVESPEED
 
+            windowSurface.blit(player_middle_paddle_stretched, player_middle_paddle)
+            windowSurface.blit(player_bottom_paddle_stretched, player_bottom_paddle)
+            windowSurface.blit(player_top_paddle_stretched, player_top_paddle)
+
+            windowSurface.blit(AI_middle_paddle_stretched, AI_middle_paddle)
+            windowSurface.blit(AI_bottom_paddle_stretched, AI_bottom_paddle)
+            windowSurface.blit(AI_top_paddle_stretched, AI_top_paddle)
+            windowSurface.blit(ball.ball_Fixed, ball.ball_obj)
             pygame.display.update()
 
 
