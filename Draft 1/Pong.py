@@ -1,4 +1,6 @@
-import pygame, sys, time, random
+import pygame
+import sys
+import random
 from pygame.locals import *
 
 # setup window
@@ -23,13 +25,13 @@ class Ball:
     ball_Fixed = pygame.transform.scale(ball_Image, (40, 20))
 
 
-class score():
+class score:
     player_Score = 0
     AI_Score = 0
 
 
 Ball.velocity = random.randint(-1, 1)
-Ball.angle = random.randint(-5,5)
+Ball.angle = random.randint(-5, 5)
 
 
 def exit_game():
@@ -46,6 +48,8 @@ def get_input():
             if e.type == KEYDOWN:
                 if e.key == K_ESCAPE:
                     exit_game()
+                if e.key == K_p:
+                    play()
                 return  # start game for any other key down
 
 
@@ -75,14 +79,13 @@ def reset_ball():
     Ball.angle = random.randint(-5, 5)
 
 
-
 def play():
-    # setup pygame
+
     pygame.init()
-    mainClock = pygame.time.Clock()
+    mainclock = pygame.time.Clock()
 
     pygame.display.set_caption('Pong')
-
+    hit_noise = pygame.mixer.Sound('contact.wav')
     game_over_sound = pygame.mixer.Sound('game_over.wav')
     pygame.mixer.music.load('background.wav')
     font = pygame.font.Font(None, 48)
@@ -92,8 +95,6 @@ def play():
     moveright = False
     moveup = False
     movedown = False
-
-    #Setup the block data structure
 
     paddle_image = pygame.image.load('spongebob.gif')
 
@@ -106,7 +107,7 @@ def play():
     player_bottom_paddle = pygame.Rect(WINDOWWIDTH - 100, WINDOWHEIGHT - 100, 100, 100)
     player_bottom_paddle_stretched = pygame.transform.scale(paddle_image, (100, 100))
 
-    ai_middle_paddle = pygame.Rect(0, WINDOWHEIGHT /2, 200, 100)
+    ai_middle_paddle = pygame.Rect(0, WINDOWHEIGHT / 2, 200, 100)
     ai_middle_paddle_stretched = pygame.transform.scale(paddle_image, (100, 100))
 
     ai_top_paddle = pygame.Rect(0, 0, 100, 100)
@@ -116,8 +117,8 @@ def play():
     ai_bottom_paddle_stretched = pygame.transform.scale(paddle_image, (100, 100))
 
     netimage = pygame.image.load('net.png')
-    net = pygame.Rect(WINDOWWIDTH /2 - 100, WINDOWHEIGHT /2, 150, 150)
-    net_stretched = pygame.transform.scale(netimage, (150,150))
+    net = pygame.Rect(WINDOWWIDTH / 2 - 100, WINDOWHEIGHT / 2, 150, 150)
+    net_stretched = pygame.transform.scale(netimage, (150, 150))
 
     windowSurface.fill(WHITE)
     draw_text('Pong', font, windowSurface, WINDOWWIDTH / 3, WINDOWHEIGHT / 3)
@@ -125,10 +126,9 @@ def play():
               WINDOWHEIGHT / 3 + 50)
     pygame.display.update()
     get_input()
-    top_score = 0
     play_game_again = True
     while play_game_again:
-        # pygame.mixer.music.play(-1,0.0)
+        pygame.mixer.music.play(-1, 0.0)
 
         play_game = True
         while play_game:
@@ -174,16 +174,19 @@ def play():
             if moveleft and player_top_paddle.left > WINDOWWIDTH / 2:
                 player_top_paddle.left -= MOVESPEED
                 player_bottom_paddle.left -= MOVESPEED
-            if moveright and player_top_paddle.right < WINDOWWIDTH :
+            if moveright and player_top_paddle.right < WINDOWWIDTH:
                 player_top_paddle.right += MOVESPEED
                 player_bottom_paddle.right += MOVESPEED
 
-            if collision(player_bottom_paddle,Ball) or collision(player_top_paddle,Ball) or collision(player_middle_paddle,Ball):
+            if collision(player_bottom_paddle, Ball) or collision(player_top_paddle, Ball) \
+                    or collision(player_middle_paddle, Ball):
                 Ball.velocity = -Ball.velocity
-                Ball.angle = random.randint(-1,1)
+                Ball.angle = random.randint(-5, 5)
+                hit_noise.play()
             if collision(ai_bottom_paddle, Ball) or collision(ai_top_paddle, Ball) or collision(ai_middle_paddle, Ball):
                 Ball.velocity = -Ball.velocity
-                Ball.angle = random.randint(-1,1)
+                Ball.angle = random.randint(-5, 5)
+                hit_noise.play()
 
             windowSurface.blit(player_middle_paddle_stretched, player_middle_paddle)
             windowSurface.blit(player_bottom_paddle_stretched, player_bottom_paddle)
@@ -222,8 +225,20 @@ def play():
                 score.player_Score += 1
                 draw_text(str(score.player_Score), font, windowSurface, WINDOWWIDTH - 100, WINDOWHEIGHT / 2)
                 reset_ball()
+
+            if score.AI_Score > 11 or score.player_Score > 11:
+                if score.AI_Score - score.player_Score == 2:
+                    draw_text(str("AI WINS"), font, windowSurface, WINDOWWIDTH - 100, WINDOWHEIGHT / 2)
+                    game_over_sound.play()
+                else:
+                    draw_text(str("Player WINS"), font, windowSurface, WINDOWWIDTH - 100, WINDOWHEIGHT / 2)
+                    game_over_sound.play()
+                draw_text(str("Press P to play again?"), font, windowSurface, WINDOWWIDTH - 100, WINDOWHEIGHT / 2 - 200)
+                draw_text(str("Press Escape to escape"), font, windowSurface, WINDOWWIDTH - 100, WINDOWHEIGHT / 2 - 300)
+                get_input()
+
             pygame.display.update()
-            mainClock.tick(60)
+            mainclock.tick(60)
 
 
 play()
