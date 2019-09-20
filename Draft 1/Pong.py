@@ -12,15 +12,15 @@ WHITE = (255, 255, 255)
 RANDOM = (123, 45, 95)
 
 
-MOVESPEED = 2
+MOVESPEED = 5
 
 
 class ball():
-    ball_obj = pygame.Rect(WINDOWWIDTH /2, WINDOWHEIGHT /2, 100, 100)
+    ball_obj = pygame.Rect(WINDOWWIDTH /2, WINDOWHEIGHT /2, 40, 20)
     velocity = 0
     angle = 0
     ball_Image = pygame.image.load('ball.png')
-    ball_Fixed = pygame.transform.scale(ball_Image, (100,100))
+    ball_Fixed = pygame.transform.scale(ball_Image, (40,20))
 
 
 class score():
@@ -28,8 +28,8 @@ class score():
     AI_Score = 0
 
 
-ball.velocity = random.randint(-2, 2)
-ball.angle = random.randint(-2,2)
+ball.velocity = random.randint(-1, 1)
+ball.angle = random.randint(-5,5)
 
 
 def exit_game():
@@ -50,10 +50,14 @@ def get_input():
 
 
 def collision(player_rect, ball):
-    if player_rect.colliderrect(ball):
+    if player_rect.colliderect(ball.ball_obj):
         return True
     return False
 
+def AI_command(play_rect, ball):
+    if play_rect.right - ball.ball_obj.x < 50:
+        return True
+    return False
 
 def draw_text(text, font, surface, x, y):
     textobj = font.render(text, 1, (0, 0, 0))
@@ -166,15 +170,27 @@ def play():
                 player_top_paddle.right += MOVESPEED
                 player_bottom_paddle.right += MOVESPEED
 
+            if collision(player_bottom_paddle,ball) or collision(player_top_paddle,ball) or collision(player_middle_paddle,ball):
+                ball.velocity = -ball.velocity
+                ball.angle = random.randint(-1,1)
+            if collision(AI_bottom_paddle, ball) or collision(AI_top_paddle, ball) or collision(AI_middle_paddle, ball):
+                ball.velocity = -ball.velocity
+                ball.angle = random.randinta(-1,1)
+
+
+
+
             windowSurface.blit(player_middle_paddle_stretched, player_middle_paddle)
             windowSurface.blit(player_bottom_paddle_stretched, player_bottom_paddle)
             windowSurface.blit(player_top_paddle_stretched, player_top_paddle)
 
             windowSurface.blit(AI_middle_paddle_stretched, AI_middle_paddle)
             windowSurface.blit(AI_bottom_paddle_stretched, AI_bottom_paddle)
+
+            windowSurface.blit(net_stretched,net)
             windowSurface.blit(AI_top_paddle_stretched, AI_top_paddle)
             windowSurface.blit(ball.ball_Fixed, ball.ball_obj)
             pygame.display.update()
-
+            mainClock.tick(60)
 
 play()
